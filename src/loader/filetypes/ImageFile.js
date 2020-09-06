@@ -110,11 +110,8 @@ var ImageFile = new Class({
         {
             if (!_this.isWX) {
               File.revokeObjectURL(_this.data);
-
-              _this.onProcessComplete();
-            } else {
-              _this.addToCache();
             }
+            _this.onProcessComplete();
         };
 
         this.data.onerror = function ()
