@@ -283,6 +283,11 @@ var File = new Class({
             {
                 console.warn('Local data URIs are not supported: ' + this.key);
             }
+            else if (typeof wx !== 'undefined' && !this.src.startsWith('http'))
+            {
+                // 处理本地图片
+                this.loader.nextFile(this, true);
+            }
             else
             {
                 //  The creation of this XHRLoader starts the load process going.
