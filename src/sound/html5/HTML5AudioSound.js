@@ -388,6 +388,7 @@ var HTML5AudioSound = new Class({
         if (this.audio)
         {
             this.audio.pause();
+            this.audio.currentTime = 0;
             this.audio.dataset.used = 'false';
             this.audio = null;
         }

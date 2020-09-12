@@ -58,7 +58,7 @@ var HTML5AudioFile = new Class({
         File.call(this, loader, fileConfig);
 
         //  New properties specific to this class
-        this.locked = 'ontouchstart' in window;
+        this.locked = false;
         this.loaded = false;
         this.filesLoaded = 0;
         this.filesTotal = 0;
@@ -94,8 +94,8 @@ var HTML5AudioFile = new Class({
         {
             var audio = this.data[i];
 
-            audio.oncanplaythrough = null;
-            audio.onerror = null;
+            audio.removeEventListener('canplaythrough');
+            audio.removeEventListener('error');
         }
 
         this.loader.nextFile(this, false);
@@ -112,15 +112,14 @@ var HTML5AudioFile = new Class({
     {
         var audio = event.target;
 
-        audio.oncanplaythrough = null;
-        audio.onerror = null;
+        audio.removeEventListener('canplaythrough');
+        audio.removeEventListener('error');
 
         this.filesLoaded++;
 
         this.percentComplete = Math.min((this.filesLoaded / this.filesTotal), 1);
 
         this.loader.emit(Events.FILE_PROGRESS, this, this.percentComplete);
-
         if (this.filesLoaded === this.filesTotal)
         {
             this.onLoad();
@@ -137,6 +136,7 @@ var HTML5AudioFile = new Class({
      */
     load: function ()
     {
+        var _this = this;
         this.data = [];
 
         var instances = (this.config && this.config.instances) || 1;
@@ -166,8 +166,16 @@ var HTML5AudioFile = new Class({
                 audio.dataset.locked = 'false';
 
                 audio.preload = 'auto';
-                audio.oncanplaythrough = this.onProgress.bind(this);
-                audio.onerror = this.onError.bind(this);
+                audio.addEventListener('canplaythrough', function ()
+                {
+                    _this.onProgress({
+                        target: audio
+                    });
+                });
+                audio.addEventListener('error', function ()
+                {
+                    _this.onError();
+                });
             }
 
             this.data.push(audio);

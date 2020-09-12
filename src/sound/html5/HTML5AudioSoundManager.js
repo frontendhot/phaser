@@ -97,7 +97,7 @@ var HTML5AudioSoundManager = new Class({
          */
         this.onBlurPausedSounds = [];
 
-        this.locked = 'ontouchstart' in window;
+        this.locked = false;
 
         /**
          * A queue of all actions performed on sound objects while audio was locked.
@@ -233,10 +233,9 @@ var HTML5AudioSoundManager = new Class({
             }
 
             var lastTag = lockedTags[lockedTags.length - 1];
-
-            lastTag.oncanplaythrough = function ()
+            lastTag.addEventListener('canplaythrough', function ()
             {
-                lastTag.oncanplaythrough = null;
+                lastTag.removeEventListener('canplaythrough');
 
                 lockedTags.forEach(function (tag)
                 {
@@ -244,7 +243,7 @@ var HTML5AudioSoundManager = new Class({
                 });
 
                 _this.unlocked = true;
-            };
+            });
 
             lockedTags.forEach(function (tag)
             {
