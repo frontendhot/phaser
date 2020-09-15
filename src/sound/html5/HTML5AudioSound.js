@@ -91,6 +91,8 @@ var HTML5AudioSound = new Class({
 
         this.totalDuration = this.tags[0].duration;
 
+        this.isEnded = false;
+
         BaseSound.call(this, manager, key, config);
     },
 
@@ -363,6 +365,13 @@ var HTML5AudioSound = new Class({
     {
         var playPromise = this.audio.play();
 
+        var _this = this;
+        this.audio.addEventListener('ended', function ()
+        {
+            _this.audio.removeEventListener('ended');
+            _this.isEnded = true;
+        });
+
         if (playPromise)
         {
             // eslint-disable-next-line no-unused-vars
@@ -384,11 +393,11 @@ var HTML5AudioSound = new Class({
     {
         this.startTime = 0;
         this.previousTime = 0;
+        this.isEnded = false;
 
         if (this.audio)
         {
-            this.audio.pause();
-            this.audio.currentTime = 0;
+            this.audio.stop();
             this.audio.dataset.used = 'false';
             this.audio = null;
         }
@@ -499,7 +508,7 @@ var HTML5AudioSound = new Class({
                 this.emit(Events.LOOPED, this);
             }
         }
-        else if (currentTime >= endTime)
+        else if (this.isEnded)
         {
             this.reset();
 
