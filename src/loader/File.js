@@ -281,7 +281,14 @@ var File = new Class({
 
             if (this.src.indexOf('data:') === 0)
             {
-                console.warn('Local data URIs are not supported: ' + this.key);
+                if (typeof wx !== 'undefined')
+                {
+                    this.loader.nextFile(this, true);
+                }
+                else
+                {
+                    console.warn('Local data URIs are not supported: ' + this.key);
+                }
             }
             else if (typeof wx !== 'undefined' && !this.src.startsWith('http'))
             {
